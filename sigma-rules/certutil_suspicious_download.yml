@@ -1,0 +1,33 @@
+title: Certutil Suspicious File Download
+id: d345a183-1d9e-4c3d-b1f2-d418dcd77fa1
+description: Detects use of certutil.exe to download or decode content, often used by attackers for living-off-the-land techniques
+status: experimental
+author: Mohammed Alkahala
+date: 2024/07/29
+references:
+  - https://attack.mitre.org/techniques/T1105/
+  - https://www.sans.org/blog/certutil-attack/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\certutil.exe'
+    CommandLine|contains:
+      - 'http'
+      - '-urlcache'
+      - '-split'
+      - '-decode'
+  condition: selection
+fields:
+  - CommandLine
+  - Image
+  - ParentImage
+  - User
+falsepositives:
+  - Admins downloading certs via CLI
+  - Legitimate SCEP or PKI automation
+level: high
+tags:
+  - attack.command_and_control
+  - attack.t1105
