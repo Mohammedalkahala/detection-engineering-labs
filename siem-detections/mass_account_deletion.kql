@@ -1,0 +1,7 @@
+// Detect multiple user account deletions in a short timeframe
+
+AuditLogs
+| where OperationName == "Delete user"
+| summarize Deletions=count(), start_time=min(TimeGenerated), end_time=max(TimeGenerated) by InitiatedBy, bin(TimeGenerated, 10m)
+| where Deletions > 5
+| project InitiatedBy, Deletions, start_time, end_time
