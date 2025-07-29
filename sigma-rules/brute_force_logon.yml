@@ -1,0 +1,30 @@
+title: Suspicious PowerShell Command Line
+id: 7cf8ddde-2cfd-4fbb-989f-8e9c25b9e951
+description: Detects PowerShell executions with suspicious flags like -EncodedCommand or bypassing AMSI
+status: experimental
+author: Mohammed Alkahala
+date: 2024/07/29
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\powershell.exe'
+    CommandLine|contains:
+      - '-EncodedCommand'
+      - 'bypass'
+      - 'Invoke-Expression'
+  condition: selection
+fields:
+  - CommandLine
+  - ParentImage
+  - Image
+  - User
+falsepositives:
+  - Admins using encoded scripts
+level: medium
+tags:
+  - attack.execution
+  - attack.t1059.001
